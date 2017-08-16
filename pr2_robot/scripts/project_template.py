@@ -58,7 +58,7 @@ def pcl_callback(pcl_msg):
     # Much like the previous filters, we start by creating a filter object:
     outlier_filter = cloud_filtered.make_statistical_outlier_filter()
     # Set the number of neighboring points to analyze for any given point
-    outlier_filter.set_mean_k(10)
+    outlier_filter.set_mean_k(7)
     # Set threshold scale factor
     x = 0.1
     # Any point with a mean distance larger than global (mean distance+x*std_dev) will be considered outlier
@@ -69,14 +69,11 @@ def pcl_callback(pcl_msg):
     # TODO: Voxel Grid Downsampling
     ''' Voxel Grid filter '''
     vox = cloud_filtered.make_voxel_grid_filter()
-
     # Choose a voxel (also known as leaf) size
     # this is the measurement size of each unit
     LEAF_SIZE = 0.01
-
     # Set the voxel (or leaf) size
     vox.set_leaf_size(LEAF_SIZE, LEAF_SIZE, LEAF_SIZE)
-
     # Call the filter function to obtain the resultant downsampled point cloud
     cloud_filtered = vox.filter()
 
@@ -86,6 +83,16 @@ def pcl_callback(pcl_msg):
     passthrough = cloud_filtered.make_passthrough_filter()
 
     # Assign axis and range to the passthrough filter object.
+    filter_axis = 'y'
+    passthrough.set_filter_field_name(filter_axis)
+    axis_min = -0.47
+    axis_max = 0.47
+    passthrough.set_filter_limits(axis_min, axis_max)
+    # Finally use the filter function to obtain the resultant point cloud.
+    cloud_filtered = passthrough.filter()
+
+    # Create a PassThrough filter object.
+    passthrough = cloud_filtered.make_passthrough_filter()
     filter_axis = 'z'
     passthrough.set_filter_field_name(filter_axis)
     axis_min = 0.6
