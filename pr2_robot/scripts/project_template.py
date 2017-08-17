@@ -234,7 +234,7 @@ def pcl_callback(pcl_msg):
 # function to load parameters and request PickPlace service
 def pr2_mover(object_list):
 
-    # TODO: Initialize variables
+    '''# TODO: Initialize variables
 
     # TODO: Get/Read parameters
 
@@ -255,7 +255,7 @@ def pr2_mover(object_list):
         # Wait for 'pick_place_routine' service to come up
         rospy.wait_for_service('pick_place_routine')
 
-        '''try:
+        try:
             pick_place_routine = rospy.ServiceProxy('pick_place_routine', PickPlace)
 
             # TODO: Insert your message variables to be sent as a service request
@@ -264,9 +264,93 @@ def pr2_mover(object_list):
             print ("Response: ",resp.success)
 
         except rospy.ServiceException, e:
-            print "Service call failed: %s"%e'''
+            print "Service call failed: %s"%e
 
     # TODO: Output your request parameters into output yaml file
+
+    # TODO: Initialize variables
+
+    # TODO: Get/Read parameters
+    # get parameters'''
+
+
+
+    # TODO: Initialize variables
+
+    # TODO: Get/Read parameters
+    # get parameters
+    object_list_param = rospy.get_param('/object_list')
+    print object_list_param
+
+    # TODO: Parse parameters into individual variables
+
+    # TODO: Rotate PR2 in place to capture side tables for the collision map
+
+    # TODO: Loop through the pick list
+    for i in range(len(object_list_param)):
+
+        object_name = object_list_param[i]['name']
+        object_group = object_list_param[i]['group']
+
+        labels = []
+        centroids = []  # to be list of tuples (x, y, z)
+        for object in object_list:
+
+            # TODO: Get the PointCloud for a given object and obtain it's centroid
+            if (object.label == object_name):
+                labels.append(object.label)
+                points_arr = ros_to_pcl(object.cloud).to_array()
+                centroids.append(np.mean(points_arr, axis=0)[:3])
+                center_x = np.asscalar(centroids[0][0])
+                center_y = np.asscalar(centroids[0][1])
+                center_z = np.asscalar(centroids[0][2])
+
+                print "correct object"
+                test_scene_num = Int32()
+                test_scene_num.data = 1
+
+                # Initialize a variable
+                object_name = String()
+                # Populate the data field
+                object_name.data = object_list_param[i]['name']
+
+                # TODO: Create 'place_pose' for the object
+                # initialize an empty pose message
+                pick_pose = Pose()
+                pick_pose.position.x = center_x
+                pick_pose.position.y = center_y
+                pick_pose.position.z = center_z
+
+                # get parameters
+                pick_param = rospy.get_param('/dropbox')
+                place_pose = Pose()
+
+                place_pose.position.x = pick_param[0]['position'][0]
+                place_pose.position.y = pick_param[0]['position'][1]
+                place_pose.position.z = pick_param[0]['position'][2]
+
+                # TODO: Assign the arm to be used for pick_place
+                arm_name = String()
+                arm_name.data = pick_param[0]['name']
+
+                # TODO: Create a list of dictionaries (made with make_yaml_dict()) for later output to yaml format
+                yaml_dict = make_yaml_dict(test_scene_num, arm_name, object_name, pick_pose, place_pose)
+
+                # Wait for 'pick_place_routine' service to come up
+                rospy.wait_for_service('pick_place_routine')
+
+                try:
+                    pick_place_routine = rospy.ServiceProxy('pick_place_routine', PickPlace)
+
+                    # TODO: Insert your message variables to be sent as a service request
+                    resp = pick_place_routine(test_scene_num, object_name, arm_name, pick_pose, place_pose)
+
+                    print ("Response: ",resp.success)
+
+                except rospy.ServiceException, e:
+                    print "Service call failed: %s"%e
+
+                # TODO: Output your request parameters into output yaml file
 
 
 
