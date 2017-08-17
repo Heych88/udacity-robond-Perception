@@ -53,7 +53,7 @@ def pcl_callback(pcl_msg):
 
     # TODO: Convert ROS msg to PCL data
     cloud_filtered = ros_to_pcl(pcl_msg)
-    
+
     # TODO: Statistical Outlier Filtering
     # Much like the previous filters, we start by creating a filter object:
     outlier_filter = cloud_filtered.make_statistical_outlier_filter()
@@ -71,7 +71,7 @@ def pcl_callback(pcl_msg):
     vox = cloud_filtered.make_voxel_grid_filter()
     # Choose a voxel (also known as leaf) size
     # this is the measurement size of each unit
-    LEAF_SIZE = 0.01
+    LEAF_SIZE = 0.005
     # Set the voxel (or leaf) size
     vox.set_leaf_size(LEAF_SIZE, LEAF_SIZE, LEAF_SIZE)
     # Call the filter function to obtain the resultant downsampled point cloud
@@ -195,9 +195,9 @@ def pcl_callback(pcl_msg):
 
         # Extract histogram features
         # TODO: complete this step just as is covered in capture_features.py
-        chists = compute_color_histograms(ros_cluster, using_hsv=True, nbins=44)
+        chists = compute_color_histograms(ros_cluster, using_hsv=True, nbins=46)
         normals = get_normals(ros_cluster)
-        nhists = compute_normal_histograms(normals, nbins=20)
+        nhists = compute_normal_histograms(normals, nbins=24)
         feature = np.concatenate((chists, nhists))
 
         # Make the prediction, retrieve the label for the result
@@ -226,10 +226,10 @@ def pcl_callback(pcl_msg):
     # Suggested location for where to invoke your pr2_mover() function within pcl_callback()
     # Could add some logic to determine whether or not your object detections are robust
     # before calling pr2_mover()
-    '''try:
-        pr2_mover(detected_objects_list)
+    try:
+        pr2_mover(detected_objects)
     except rospy.ROSInterruptException:
-        pass'''
+        pass
 
 # function to load parameters and request PickPlace service
 def pr2_mover(object_list):
@@ -255,7 +255,7 @@ def pr2_mover(object_list):
         # Wait for 'pick_place_routine' service to come up
         rospy.wait_for_service('pick_place_routine')
 
-        try:
+        '''try:
             pick_place_routine = rospy.ServiceProxy('pick_place_routine', PickPlace)
 
             # TODO: Insert your message variables to be sent as a service request
@@ -264,7 +264,7 @@ def pr2_mover(object_list):
             print ("Response: ",resp.success)
 
         except rospy.ServiceException, e:
-            print "Service call failed: %s"%e
+            print "Service call failed: %s"%e'''
 
     # TODO: Output your request parameters into output yaml file
 
