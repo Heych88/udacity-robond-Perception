@@ -195,9 +195,9 @@ def pcl_callback(pcl_msg):
 
         # Extract histogram features
         # TODO: complete this step just as is covered in capture_features.py
-        chists = compute_color_histograms(ros_cluster, using_hsv=True, nbins=46)
+        chists = compute_color_histograms(ros_cluster, using_hsv=True, nbins=44)
         normals = get_normals(ros_cluster)
-        nhists = compute_normal_histograms(normals, nbins=24)
+        nhists = compute_normal_histograms(normals, nbins=20)
         feature = np.concatenate((chists, nhists))
 
         # Make the prediction, retrieve the label for the result
@@ -280,7 +280,6 @@ def pr2_mover(object_list):
     # TODO: Get/Read parameters
     # get parameters
     object_list_param = rospy.get_param('/object_list')
-    print object_list_param
 
     # TODO: Parse parameters into individual variables
 
@@ -305,7 +304,10 @@ def pr2_mover(object_list):
                 center_y = np.asscalar(centroids[0][1])
                 center_z = np.asscalar(centroids[0][2])
 
-                print "correct object"
+                #print np.mean(points_arr, axis=0)
+                #print np.mean(points_arr, axis=0)[:3]
+                #print np.median(points_arr, axis=0)
+
                 test_scene_num = Int32()
                 test_scene_num.data = 1
 
@@ -331,7 +333,10 @@ def pr2_mover(object_list):
 
                 # TODO: Assign the arm to be used for pick_place
                 arm_name = String()
-                arm_name.data = pick_param[0]['name']
+                if(object_group == 'red'):
+                    arm_name.data = pick_param[0]['name'] # use the right arm
+                elif(object_group == 'green'):
+                    arm_name.data = pick_param[1]['name'] # use the left arm
 
                 # TODO: Create a list of dictionaries (made with make_yaml_dict()) for later output to yaml format
                 yaml_dict = make_yaml_dict(test_scene_num, arm_name, object_name, pick_pose, place_pose)
