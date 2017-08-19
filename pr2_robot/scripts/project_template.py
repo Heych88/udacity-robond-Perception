@@ -268,15 +268,13 @@ def pcl_callback(pcl_msg):
     rospy.loginfo('Detected {} objects: {}'.format(len(detected_objects_labels), detected_objects_labels))
 
     # Publish the list of detected objects
-    # This is the output you'll need to complete the upcoming project!
     detected_objects_pub.publish(detected_objects)
 
     # Suggested location for where to invoke your pr2_mover() function within pcl_callback()
-    # Could add some logic to determine whether or not your object detections are robust
+    # TODO: add some logic to determine whether or not your object detections are robust
     # before calling pr2_mover()
     try:
-        pr2_mover(detected_objects) # uncomment if the robot is to pickup objects
-        #pass
+        pr2_mover(detected_objects)
     except rospy.ROSInterruptException:
         pass
 
