@@ -24,7 +24,7 @@ from pr2_robot.srv import *
 from rospy_message_converter import message_converter
 import yaml
 
-scene_num = 3 # the test scene used in the model
+scene_num = 1 # the test scene used in the model
 
 # Helper function to get surface normals
 def get_normals(cloud):
@@ -285,11 +285,14 @@ def pr2_mover(object_list):
     :return: None
     '''
 
-    yaml_dict = {}
     dict_list = []
 
     # Get/Read the detected object parameters
     object_list_param = rospy.get_param('/object_list')
+
+    # Loop through the pick list
+    labels = []
+    centroids = []  # to be list of tuples (x, y, z)
 
     for i in range(len(object_list_param)):
         # Put the object parameters into individual variables
@@ -301,10 +304,7 @@ def pr2_mover(object_list):
         #pub_PR2_rotate = rospy.Publisher(topic_name, std_msgs.msg.Float64, queue_size=3)
         #pub_PR2_rotate.publish(np.pi/2)
 
-        # Loop through the pick list
-        labels = []
-        centroids = [] # to be list of tuples (x, y, z)
-        for object in object_list:
+        for j, object in enumerate(object_list):
             labels.append(object.label)
             points_arr = ros_to_pcl(object.cloud).to_array()
             centroids.append(np.mean(points_arr, axis=0)[:3])
@@ -316,9 +316,9 @@ def pr2_mover(object_list):
 
                 # Get the PointCloud for a given object and obtain it's centroid
                 centroids.append(np.mean(points_arr, axis=0)[:3])
-                center_x = np.asscalar(centroids[0][0])
-                center_y = np.asscalar(centroids[0][1])
-                center_z = np.asscalar(centroids[0][2])
+                center_x = np.asscalar(centroids[j][0])
+                center_y = np.asscalar(centroids[j][1])
+                center_z = np.asscalar(centroids[j][2])
 
                 # store which environment is used
                 test_scene_num = Int32()
@@ -336,6 +336,8 @@ def pr2_mover(object_list):
                 pick_pose.position.y = center_y
                 pick_pose.position.z = center_z
 
+                cent = (center_x, center_y, center_z)
+
                 # get parameters
                 dropbox_param = rospy.get_param('/dropbox')
                 place_pose = Pose()
@@ -347,6 +349,8 @@ def pr2_mover(object_list):
                     arm_name.data = dropbox_param[0]['name']
 
                     # Create the objects final resting position to be placed
+                    # offset each item so they do not stack on top of each other
+                    # TODO: better object drop location tracking to prevent objects from dropping outside the boxes with large picking list.
                     place_pose.position.x = dropbox_param[0]['position'][0]-0.03 - 0.05 * i
                     place_pose.position.y = dropbox_param[0]['position'][1] + 0.03 * i
                     place_pose.position.z = dropbox_param[0]['position'][2]
@@ -355,11 +359,13 @@ def pr2_mover(object_list):
                     arm_name.data = dropbox_param[1]['name']
 
                     # Create the objects final resting position to be placed
+                    # TODO: As described in the above TODO. better drop location tracking
                     place_pose.position.x = dropbox_param[1]['position'][0]-0.03 - 0.05 * i
                     place_pose.position.y = dropbox_param[1]['position'][1] - 0.06 * i
                     place_pose.position.z = dropbox_param[1]['position'][2]
 
                 # make a dictionary of the robot and objects movement data
+                yaml_dict = {}
                 yaml_dict = make_yaml_dict(test_scene_num, arm_name, object_name, pick_pose, place_pose)
                 dict_list.append(yaml_dict)
 
@@ -370,12 +376,15 @@ def pr2_mover(object_list):
                     pick_place_routine = rospy.ServiceProxy('pick_place_routine', PickPlace)
 
                     # send a service request for the objects pick and place movement
+                    # pick_pose - the position of the object location in which it will be picked up
+                    # place_pose - the location of the final place it is to be dropped at
                     resp = pick_place_routine(test_scene_num, object_name, arm_name, pick_pose, place_pose)
 
                     print ("Response: ",resp.success)
 
                 except rospy.ServiceException, e:
                     print "Service call failed: %s"%e
+
 
     # Output the request parameters into the enviroment output yaml file
     out_file = ''
