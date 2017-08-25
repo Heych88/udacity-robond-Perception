@@ -72,9 +72,17 @@ The surface normals value range was found to be between -1 and 1. Due to this, t
 
 The final feature extraction involves only the *HSV* colour space and the surface norms. On top of this during testing, the *RGB* colour space was also extracted, however, the resulting accuracy was inconsistent resulting in high fluctuations in classification accuracy.
 
-The *SVM* classifier used the default *sklearn.svc.svm* parameters with two exceptions, 1. `kernel = 'linear'` and `C = 50`. The original `'rbf'` kernel overfit the data resulting in inaccurate classification, while a large `C` created more precise boundaries but not so much as to overfit the data.
+The *SVM* classifier used the default *sklearn.svc.svm* parameters with two exceptions, 1. `kernel = 'linear'` and `C = 50`. The original `'rbf'` kernel overfit the data resulting in inaccurate classification, while a large `C` created more precise boundaries but not so much as to overfit the data. The table below describes the final test and system accuracy of the classifier.
+
+parameters | kernel = 'linear', C=50, hist bins = 44, norm bins = 20
+--- | ---
+Scores | [ 0.92375  0.92     0.9275   0.92     0.91875]
+Accuracy | 0.92 (+/- 0.01)
+accuracy score | 0.922
 
 The most significant contributor to accuracy was found to be the amount of data collected for training. The final model has been trained with 500 different point-clouds of each object resulting in 4000 data sets for the model to classify. As a result of the trained model, `model.sav`, has led to the following normalised confusion matrix.
+
+Section **Object Classification training**, below, describes the resulting effect of certain SVM parameters on the system.
 
 ![normalized confusion matrix-1](images/figure_1.png)
 
@@ -147,6 +155,64 @@ biscuits | right | (0.588, -0.219, 0.705) | (-0.18, -0.89, 0.605)
 eraser | left | (0.608, 0.282, 0.647) | (-0.23, 0.83, 0.605)
 soap2 | right | (0.44, 0.215, 0.686) * | (-0.28, -1.01, 0.605)
 soap | right | (0.679, 0.004, 0.677) | (-0.33, -1.07, 0.605)
+
+##### Object Classification training
+
+Below shows the effect of parameters in the training and classification of objects on the same data set.
+
+parameters | kernel = 'rbf', C=100, hist bins = 24, norm bins = 20
+--- | ---
+Scores | [ 0.95125  0.94875  0.9575   0.95375  0.94375]
+Accuracy | 0.95 (+/- 0.01)
+accuracy score | 0.951
+
+parameters | kernel = 'rbf', C=100, hist bins = 32, norm bins = 20
+--- | ---
+Scores | [ 0.96375  0.94875  0.9525   0.9575   0.945  ]
+Accuracy | 0.95 (+/- 0.01)
+accuracy score | 0.9535
+
+parameters | kernel = 'rbf', C=100, hist bins = 44, norm bins = 20
+--- | ---
+Scores | [ 0.96     0.9525   0.95875  0.95625  0.9525 ]
+Accuracy | 0.96 (+/- 0.01)
+accuracy score | **0.956**
+
+parameters | kernel = 'rbf', C=100, hist bins = 62, norm bins = 20
+--- | ---
+Scores | [ 0.95875  0.95     0.94375  0.9525   0.94625]
+Accuracy | 0.95 (+/- 0.01)
+accuracy score | 0.95025
+
+parameters | kernel = 'rbf', C=100, hist bins = 24, norm bins = 40
+--- | ---
+Scores | [ 0.9325   0.93625  0.94     0.9375   0.925  ]
+Accuracy | 0.93 (+/- 0.01)
+accuracy score | 0.93425
+
+parameters | kernel = 'rbf', C=100, hist bins = 32, norm bins = 40
+--- | ---
+Scores | [ 0.94875  0.935    0.94375  0.94125  0.9325 ]
+Accuracy | 0.94 (+/- 0.01)
+accuracy score | 0.94025
+
+parameters | kernel = 'rbf', C=100, hist bins = 44, norm bins = 40
+--- | ---
+Scores | [ 0.95625  0.94125  0.9575   0.95375  0.935  ]
+Accuracy | 0.95 (+/- 0.02)
+accuracy score | 0.946
+
+parameters | kernel = 'rbf', C=100, hist bins = 64, norm bins = 40
+--- | ---
+Scores | [ 0.9575   0.94375  0.94875  0.9475   0.9325 ]
+Accuracy | 0.95 (+/- 0.02)
+accuracy score | 0.946
+
+parameters | kernel = 'linear', C=50, hist bins = 44, norm bins = 20
+--- | ---
+Scores | [ 0.92375  0.92     0.9275   0.92     0.91875]
+Accuracy | 0.92 (+/- 0.01)
+accuracy score | 0.922
 
 ##### Code Limitations and Future Improvements
 
