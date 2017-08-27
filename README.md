@@ -46,7 +46,7 @@ If you wish to use the trained model and have followed the steps in the *Test En
 
 ```sh
 $ cd <this cloned repository path>/udacity-robond-Perception
-$ cp model.sav project_template.py ~/catkin_ws/src/RoboND-Perception-Project/pr2_robot/scripts
+$ cp pr2_robot/scripts/model.sav pr2_robot/scripts/project_template.py ~/catkin_ws/src/RoboND-Perception-Project/pr2_robot/scripts
 ```
 Now install missing dependencies using rosdep install:
 ```sh
