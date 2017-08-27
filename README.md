@@ -1,6 +1,6 @@
 # Perception and Object Recognition with 3D Point-clouds
 
-This repository contains a Robot Operating System (ROS) perception pipeline implementation for identifying and classifing objects from a noisy tabletop environment, using point-cloud data from an RGB-D sensor. This is used for picking, sorting and relocating of the objects into bins using a PR2 robot. This project uses ROS with Python for project 3 of the [![Udacity - Robotics NanoDegree Program](https://s3-us-west-1.amazonaws.com/udacity-robotics/Extra+Images/RoboND_flag.png)](https://www.udacity.com/robotics)
+This repository contains a Robot Operating System (ROS) perception pipeline implementation for identifying and classifying objects from a noisy tabletop environment, using point-cloud data from an RGB-D sensor. This is used for picking, sorting and relocating of the objects into bins using a PR2 robot. This project uses ROS with Python for project 3 of the [![Udacity - Robotics NanoDegree Program](https://s3-us-west-1.amazonaws.com/udacity-robotics/Extra+Images/RoboND_flag.png)](https://www.udacity.com/robotics)
 
 ## Writeup
 
@@ -8,7 +8,7 @@ The [writeup.md](writeup.md) contains details of the code, future work and where
 
 ## Prerequisites
 
-1. [Ubuntu](https://www.ubuntu.com/) OS, as at the time of this writting, ROS only works on Ubuntu.
+1. [Ubuntu](https://www.ubuntu.com/) OS, as at the time of this writing, ROS only works on Ubuntu.
 
 2. Python 2. Installation instructions can be found [here](https://www.python.org/downloads/).
 
@@ -16,11 +16,11 @@ The [writeup.md](writeup.md) contains details of the code, future work and where
 
 #### External repositories
 
-This project uses two external repositories. One for training the object classification model and a second for implementing the PR2 tabletop enviroment for pick and place.
+This project uses two external repositories. One for training the object classification model and a second for implementing the PR2 tabletop environment for pick and place.
 
 ###### Training repository
 
-This step can be skipped and is not required if the pre-trained `model.sav` is used. otherwise, Download and setup the [Udacity Perception Exercises repository](https://github.com/udacity/RoboND-Perception-Exercises). If ROS is installed, follow the setup instructions outlined in the repositories README.
+This step can be skipped and is not required if the pre-trained `model.sav` is used. Otherwise, Download and setup the [Udacity Perception Exercises repository](https://github.com/udacity/RoboND-Perception-Exercises). If ROS is installed, follow the setup instructions outlined in the repositories README.
 
 ###### Test Enviroment repository
 
@@ -42,7 +42,7 @@ $ cp -R sensor_stick/scripts/* ~/catkin/src/sensor_stick/scripts
 $ cp sensor_stick/src/sensor_stick/features.py  ~/catkin/src/sensor_stick/src/sensor_stick
 ```
 
-If you wish to use the trained model and have followed the steps in the *Test Enviroment repository*, copy the files `model.sav` and `project_template.py` in the  `~/catkin_ws/src/RoboND-Perception-Project/pr2_robot/scripts` folder.
+If you wish to use the trained model and have followed the steps in the *Test Environment repository*, copy the files `model.sav` and `project_template.py` in the  `~/catkin_ws/src/RoboND-Perception-Project/pr2_robot/scripts` folder.
 
 ```sh
 $ cd <this cloned repository path>/udacity-robond-Perception
