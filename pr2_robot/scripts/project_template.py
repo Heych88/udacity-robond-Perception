@@ -26,27 +26,27 @@ import yaml
 
 scene_num = 1 # the test scene used in the model
 
-# Helper function to get surface normals
+
+'''
+Calculates the surface normal of each point in the point cloud
+:param: cloud: point cloud to get the point normals
+:return: array of point surface normals
+'''
 def get_normals(cloud):
-    '''
-    Calculates the surface normal of each point in the point cloud
-    :param: cloud: point cloud to get the point normals
-    :return: array of point surface normals
-    '''
     get_normals_prox = rospy.ServiceProxy('/feature_extractor/get_normals', GetNormals)
     return get_normals_prox(cloud).cluster
 
-# Helper function to create a yaml friendly dictionary from ROS messages
+
+'''
+Converts the supplied data into a yaml friendly dictionary from ROS messages dictionary
+:param test_scene_num: enviroment scene used with the robot
+:param arm_name: arm used to pickup the object
+:param object_name: the objectes label that is to be picked up
+:param pick_pose: position of the object
+:param place_pose: position of the objects final destination
+:return: data dictionary
+'''
 def make_yaml_dict(test_scene_num, arm_name, object_name, pick_pose, place_pose):
-    '''
-    Converts the supplied data into a dictionary
-    :param test_scene_num: enviroment scene used with the robot
-    :param arm_name: arm used to pickup the object
-    :param object_name: the objectes label that is to be picked up
-    :param pick_pose: position of the object
-    :param place_pose: position of the objects final destination
-    :return: data dictionary
-    '''
     yaml_dict = {}
     yaml_dict["test_scene_num"] = test_scene_num.data
     yaml_dict["arm_name"]  = arm_name.data
@@ -55,27 +55,27 @@ def make_yaml_dict(test_scene_num, arm_name, object_name, pick_pose, place_pose)
     yaml_dict["place_pose"] = message_converter.convert_ros_message_to_dictionary(place_pose)
     return yaml_dict
 
-# Helper function to output to yaml file
+
+'''
+saves data output to yaml file
+:param yaml_filename: the name of the file to be saved
+:param dict_list: the data to be saved
+:return: None
+'''
 def send_to_yaml(yaml_filename, dict_list):
-    '''
-    saves data to file
-    :param yaml_filename: the name of the file to be saved
-    :param dict_list: the data to be saved
-    :return: None
-    '''
     data_dict = {"object_list": dict_list}
     with open(yaml_filename, 'w') as outfile:
         yaml.dump(data_dict, outfile, default_flow_style=False)
 
+        
+'''
+Removes point cloud data outliers
+:param: point_cloud, point cloud containing the filtered clusters
+:param: neighboring_pts, the number neighbouring of points to be analysed against
+:param: scale_factor, threshold scaling factor of the standard deviation
+:return: filtered point cloud
+'''
 def outlierFilter(point_cloud, neighboring_pts, scale_factor):
-    '''
-    Removes point cloud data outliers
-    :param: point_cloud, point cloud containing the filtered clusters
-    :param: neighboring_pts, the number neighbouring of points to be analysed against
-    :param: scale_factor, threshold scaling factor of the standard deviation
-    :return: filtered point cloud
-    '''
-
     outlier_filter = point_cloud.make_statistical_outlier_filter() # create the filter object
     # Set the number of neighboring points to analyze for any given point
     outlier_filter.set_mean_k(neighboring_pts)
@@ -85,28 +85,30 @@ def outlierFilter(point_cloud, neighboring_pts, scale_factor):
     # return the filtered data
     return outlier_filter.filter()
 
+
+'''
+Voxel grid down samples the point cloud
+:param: point_cloud, point cloud containing the filtered clusters
+:param: leaf_size, the measurement size of each unit
+:return: Voxel point cloud
+'''
 def voxelGrid(point_cloud, leaf_size):
-    '''
-    Voxel grid down samples the point cloud
-    :param: point_cloud, point cloud containing the filtered clusters
-    :param: leaf_size, the measurement size of each unit
-    :return: Voxel point cloud
-    '''
     vox = point_cloud.make_voxel_grid_filter()
     vox.set_leaf_size(leaf_size, leaf_size, leaf_size)
     # Call the filter function to obtain the resultant down sampled point cloud
     return vox.filter()
 
+
+'''
+Filters the point cloud to only the data within the min and max values
+:param: point_cloud, point cloud containing the filtered clusters
+:param: axis, x, y or z axis to be filter along. x is in the direction of
+        the camera, y is the left & right of the camera, z up & down
+:param: axis_min, min distance to filter
+:param: axis_min, max distance to filter
+:return: filtered point cloud
+'''
 def passThroughFilter(point_cloud, axis, axis_min, axis_max):
-    '''
-    Filters the point cloud to only the data within the min and max values
-    :param: point_cloud, point cloud containing the filtered clusters
-    :param: axis, x, y or z axis to be filter along. x is in the direction of
-            the camera, y is the left & right of the camera, z up & down
-    :param: axis_min, min distance to filter
-    :param: axis_min, max distance to filter
-    :return: filtered point cloud
-    '''
     # Create a PassThrough filter object.
     passthrough = point_cloud.make_passthrough_filter()
     filter_axis = axis
@@ -116,12 +118,14 @@ def passThroughFilter(point_cloud, axis, axis_min, axis_max):
     # return the passthrough point cloud
     return passthrough.filter()
 
+
+''' RANSAC plane segmentation for segmenting the table
+:param: point_cloud, point cloud containing the filtered clusters
+:param: max_distance, length of a point to be considered fitting the model
+:return: inlier indices and model coefficients of the segment
+'''
 def ransacFilter(point_cloud, max_distance):
-    ''' RANSAC plane segmentation for segmenting the table
-    :param: point_cloud, point cloud containing the filtered clusters
-    :param: max_distance, length of a point to be considered fitting the model
-    :return: inlier indices and model coefficients of the segment
-    '''
+    
     # Create the segmentation object
     seg = point_cloud.make_segmenter()
 
@@ -135,12 +139,13 @@ def ransacFilter(point_cloud, max_distance):
     # return the inlier indices and model coefficients of the segment
     return seg.segment()
 
+
+'''
+Euclidean Clustering
+:param: white_cloud, points cloud containing only xyz data
+:return: the cluster locations
+'''
 def euclideanCluster(white_cloud):
-    '''
-    Euclidean Clustering
-    :param: white_cloud, points cloud containing only xyz data
-    :return: the cluster locations
-    '''
     tree = white_cloud.make_kdtree()
 
     # Create a cluster extraction object
@@ -157,15 +162,16 @@ def euclideanCluster(white_cloud):
     # Extract indices for each of the discovered clusters
     return ec.Extract()
 
-def classifyClusters(point_cloud, white_cloud, cluster_indices):
-    '''
-    Classifies all the objects in a point cloud
-    :param: point_cloud, point cloud containing the filtered clusters
-    :param: white_cloud, points cloud containing only xyz data
-    :param: cluster_indices, locations of the clusters
-    :return: the classified objects positions and their labels
-    '''
 
+'''
+Classifies all the objects in a point cloud
+:param: point_cloud, point cloud containing the filtered clusters
+:param: white_cloud, points cloud containing only xyz data
+:param: cluster_indices, locations of the clusters
+:return: the classified objects positions and their labels
+'''
+def classifyClusters(point_cloud, white_cloud, cluster_indices):
+    
     detected_objects_labels = []
     detected_objects = []
 
@@ -202,13 +208,13 @@ def classifyClusters(point_cloud, white_cloud, cluster_indices):
 
     return [detected_objects, detected_objects_labels]
 
+'''
+Callback function for the Point Cloud Subscriber. Filters, classifies and
+sends positional commands for pick and place.
+:param pcl_msg: subscribers points cloud
+:return: None
+'''
 def pcl_callback(pcl_msg):
-    '''
-    Callback function for the Point Cloud Subscriber. Filters, classifies and
-    sends positional commands for pick and place.
-    :param pcl_msg: subscribers points cloud
-    :return: None
-    '''
 
     # Convert ROS msg to PCL data
     cloud_filtered = ros_to_pcl(pcl_msg)
@@ -278,12 +284,12 @@ def pcl_callback(pcl_msg):
     except rospy.ROSInterruptException:
         pass
 
+'''
+function to load parameters and request PickPlace service
+:param object_list: list of the objects that have been detected
+:return: None
+'''
 def pr2_mover(object_list):
-    '''
-    function to load parameters and request PickPlace service
-    :param object_list: list of the objects that have been detected
-    :return: None
-    '''
 
     dict_list = []
 
@@ -393,6 +399,7 @@ def pr2_mover(object_list):
     if (scene_num == 3): out_file = 'output_3.yaml'
     send_to_yaml(out_file, dict_list)
 
+    
 if __name__ == '__main__':
 
     # ROS node initialization
