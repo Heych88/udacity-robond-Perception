@@ -2,9 +2,9 @@
 
 This repository contains a Robot Operating System (ROS) perception pipeline implementation for identifying and classifying objects from a noisy tabletop environment, using point-cloud data from an RGB-D sensor. This is used for picking, sorting and relocating of the objects into bins using a PR2 robot. This project uses ROS with Python for project 3 of the [![Udacity - Robotics NanoDegree Program](https://s3-us-west-1.amazonaws.com/udacity-robotics/Extra+Images/RoboND_flag.png)](https://www.udacity.com/robotics)
 
-## Writeup
+## Project website
 
-The [writeup.md](writeup.md) contains details of the code, future work and where it currently falls short in the implementation.
+This repository has an accompanying project page, contains the theory and details behind the code. It can be found [here](https://www.haidynmcleod.com/3d-robot-perception).
 
 ## Prerequisites
 
