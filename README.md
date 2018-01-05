@@ -42,11 +42,11 @@ $ cp -R sensor_stick/scripts/* ~/catkin/src/sensor_stick/scripts
 $ cp sensor_stick/src/sensor_stick/features.py  ~/catkin/src/sensor_stick/src/sensor_stick
 ```
 
-If you wish to use the trained model and have followed the steps in the *Test Environment repository*, copy the files `model.sav` and `project_template.py` in the  `~/catkin_ws/src/RoboND-Perception-Project/pr2_robot/scripts` folder.
+If you wish to use the trained model and have followed the steps in the *Test Environment repository*, copy the files `model.sav` and `perception.py` in the  `~/catkin_ws/src/RoboND-Perception-Project/pr2_robot/scripts` folder.
 
 ```sh
 $ cd <this cloned repository path>/udacity-robond-Perception
-$ cp pr2_robot/scripts/model.sav pr2_robot/scripts/project_template.py ~/catkin_ws/src/RoboND-Perception-Project/pr2_robot/scripts
+$ cp pr2_robot/scripts/model.sav pr2_robot/scripts/perception.py ~/catkin_ws/src/RoboND-Perception-Project/pr2_robot/scripts
 ```
 Now install missing dependencies using rosdep install:
 ```sh
@@ -106,7 +106,7 @@ You should arrive at a result similar to the below.
 Once Gazebo and RViz are up and running, In a new terminal window type,
 ```sh
 $ cd ~/catkin_ws/src/RoboND-Perception-Project/pr2_robot/scripts
-$ rosrun pr2_robot project_template.py
+$ rosrun pr2_robot perception.py
 ```
 You should arrive at a result similar to the below.
 

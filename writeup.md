@@ -36,17 +36,17 @@ The `project_template.py` file takes an RGB-D point-cloud, locates and classifie
 
 The code from the description below can be found in the `project_template.py` file.
 
-Point-cloud data is collected from the robots RGB-D camera and first filtered to remove data outliers with the use of a nearest-neighbour, standard deviation filter. The function `outlierFilter()`, located between lines 70 and 86 and called with the system parameters on line 217, removes the RGB-D noise from the point cloud. Below is an example of outlier removal, copied from the Udacity *Outlier Removal Filter* section 16 of the *Lesson 3: Calibration, Filtering, and Segmentation* lessons.
+Point-cloud data is collected from the robots RGB-D camera and first filtered to remove data outliers with the use of a nearest-neighbour, standard deviation filter. The function `outlierFilter()`, located between lines 71 and 86 and called with the system parameters on line 223, removes the RGB-D noise from the point cloud. Below is an example of outlier removal, copied from the Udacity *Outlier Removal Filter* section 16 of the *Lesson 3: Calibration, Filtering, and Segmentation* lessons.
 
 ![outlier removal](images/statistical-outlier-removal-cropped.png)
 
-After downsampling the data with the function `voxelGrid()`, located between lines 88 and 98 and called with the system parameters on line 219, the data is then cropped to the known locations of where the objects in the field of view will be located. This is achieved with a pass-through filter in the x, y and z planes, forward looking of the camera, left and right of the camera and bottom to the top of the camera respectively. The function `passThroughFilter()`, located on lines 100 to 117 and called with the system parameters on lines 223, 225 and 227, removes the data from outside the supplied min and max values. Below is an example of the output of the *voxelGrid* data and the *passThroughFilter* point clouds.
+After downsampling the data with the function `voxelGrid()`, located between lines 89 and 99 and called with the system parameters on line 225, the data is then cropped to the known locations of where the objects in the field of view will be located. This is achieved with a pass-through filter in the x, y and z planes, forward looking of the camera, left and right of the camera and bottom to the top of the camera respectively. The function `passThroughFilter()`, located on lines 103 to 119 and called with the system parameters on lines 229, 231 and 233, removes the data from outside the supplied min and max values. Below is an example of the output of the *voxelGrid* data and the *passThroughFilter* point clouds.
 
 ![voxel grid point-cloud](images/point_cloud.png)
 
 ![pass through filter point-cloud](images/pass_through.png)
 
-Following this, segmentation is performed using the RANSAC algorithm using the function `ransacFilter()`, located from line 119 to 136 and called with the system parameters on lines 230 will split the data into two segments, inliers, tabletop, and outliers, objects in the image. Below are examples of the inlier and outlier point clouds.
+Following this, segmentation is performed using the RANSAC algorithm using the function `ransacFilter()`, located from line 122 to 140 and called with the system parameters on lines 236 will split the data into two segments, inliers, tabletop, and outliers, objects in the image. Below are examples of the inlier and outlier point clouds.
 
 ![voxel grid point-cloud](images/inliers.png)
 
@@ -54,13 +54,13 @@ Following this, segmentation is performed using the RANSAC algorithm using the f
 
 #### 2. Complete Exercise 2 steps: Pipeline including clustering for segmentation implemented.  
 
-Once the above objects have been filtered from the point-cloud, Euclidean clustering can be performed to locate and segment each cluster for classification. The function `euclideanCluster()`, located on between lines 138 and 158 and called with the system parameters on lines 238. Below is an example of the clustered outliers point cloud.
+Once the above objects have been filtered from the point-cloud, Euclidean clustering can be performed to locate and segment each cluster for classification. The function `euclideanCluster()`, located on between lines 143 and 163 and called with the system parameters on lines 238. Below is an example of the clustered outliers point cloud.
 
 ![clustered point-cloud](images/clusters.png)
 
 #### 2. Complete Exercise 3 Steps.  Features extracted and SVM trained.  Object recognition implemented.
 
-After the clusters have been located, features from each cluster can be extracted and then compared with a trained State Vector Machine (SVM) to classify the object most likely associated with each cluster. The function `classifyClusters()`, located from line 160 to 203 and called with the system parameters on lines 266, performs this object classification.
+After the clusters have been located, features from each cluster can be extracted and then compared with a trained State Vector Machine (SVM) to classify the object most likely associated with each cluster. The function `classifyClusters()`, located from line 167 to 209 and called with the system parameters on lines 272, performs this object classification.
 
 Feature extraction was performed using binned histograms of each feature. This method provides the benefit or removing object detail, as the bin size decreases, which normalises the object features, allowing better classification no matter its orientation or position. However, as the bin size decreases, detail is lost, and different objects begin to show the same characteristic's resulting in incorrect object classification.
 
